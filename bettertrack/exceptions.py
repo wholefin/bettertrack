@@ -1,0 +1,2 @@
+class OutOfCashError(Exception):
+    pass
