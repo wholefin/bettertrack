@@ -171,3 +171,8 @@ cython_debug/
 .pypirc
 
 .idea
+
+.ruff_cache
+.vscode
+
+data/

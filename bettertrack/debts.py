@@ -17,4 +17,3 @@ class Loan:
     apr: float
     og_principal: float
     tenure: int
-

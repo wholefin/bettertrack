@@ -44,7 +44,9 @@ class Holding(Asset):
 
         holding = copy(self)
         total_shares = holding.shares + other.shares
-        new_cost_basis = (holding.shares * holding.cost_basis + other.shares * other.cost_basis) / total_shares
+        new_cost_basis = (
+            holding.shares * holding.cost_basis + other.shares * other.cost_basis
+        ) / total_shares
 
         holding.shares = total_shares
         holding.cost_basis = new_cost_basis
@@ -52,8 +54,3 @@ class Holding(Asset):
 
     def __eq__(self, other):
         return self.ticker == other.ticker
-
-
-
-
-

@@ -11,3 +11,11 @@ dependencies = [
     "pandas>=2.2.3",
     "yfinance>=0.2.51",
 ]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "pre-commit>=4.1.0",
+    "pytest>=8.3.4",
+    "ruff>=0.9.4",
+]
