@@ -10,3 +10,7 @@ clean:
 lint:
 	uv run black .
 	uv run ruff check --fix .
+
+
+test:
+	uv run pytest tests/ -v --color=yes
