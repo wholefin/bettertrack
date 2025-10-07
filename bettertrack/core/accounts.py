@@ -1,8 +1,8 @@
 from enum import StrEnum
 from typing import Self, TypeVar
 
-from bettertrack.assets import Holding
-from bettertrack.debts import Loan
+from bettertrack.core.assets import Holding
+from bettertrack.core.debts import Loan
 from bettertrack.exceptions import OutOfCashError
 from bettertrack.price import get_asset_price
 
