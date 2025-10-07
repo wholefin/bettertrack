@@ -1,6 +1,6 @@
 import pytest
 from bettertrack import AssetAccount, Holding
-from bettertrack.accounts import Account, AccountType
+from bettertrack.core.accounts import Account, AccountType
 from bettertrack.exceptions import OutOfCashError
 
 
