@@ -1,5 +1,5 @@
 import pytest
-from bettertrack import AssetAccount, Holding
+from bettertrack import AssetAccount, Asset
 from bettertrack.core.accounts import Account, AccountType
 from bettertrack.exceptions import OutOfCashError
 
@@ -27,7 +27,7 @@ def test_asset_account_initialization():
 def test_buy_with_insufficient_cash(mocker):
     # Arrange
     asset_account = AssetAccount("Vanguard", AccountType.BROKERAGE)
-    mock_holding = mocker.Mock(spec=Holding)
+    mock_holding = mocker.Mock(spec=Asset)
     mock_holding.ticker = "VTI"
 
     # Mock the get_asset_price function

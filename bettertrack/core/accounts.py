@@ -1,7 +1,7 @@
 from enum import StrEnum
 from typing import Self, TypeVar
 
-from bettertrack.core.assets import Holding
+from bettertrack.core.assets import Asset
 from bettertrack.core.debts import Loan
 from bettertrack.exceptions import OutOfCashError
 from bettertrack.price import get_asset_price
@@ -14,7 +14,7 @@ class AccountType(StrEnum):
     CREDIT_CARD = "credit-card"
 
 
-AccountHolding = TypeVar("AccountHolding", Holding, Loan)
+AccountHolding = TypeVar("AccountHolding", Asset, Loan)
 
 
 class Account:
@@ -41,7 +41,7 @@ class Account:
     def __init__(
         self,
         institution: str,
-        acc_type: AccountType,
+        acc_type: AccountType | str,
         acc_holdings: list[AccountHolding] | None = None,
     ):
         self._institution = institution
@@ -104,7 +104,7 @@ class AssetAccount(Account):
     ----------
     cash : float
         The amount of cash in the account.
-    holdings : list[Holding]
+    holdings : list[Asset]
         The holdings in the account.
     """
 
@@ -112,10 +112,10 @@ class AssetAccount(Account):
         self,
         institution: str,
         acc_type: AccountType,
-        acc_holdings: list[Holding] | None = None,
+        acc_holdings: list[Asset] | None = None,
     ):
         super().__init__(institution, acc_type, acc_holdings=acc_holdings)
-        self._holdings: dict[str, Holding] = {}
+        self._holdings: dict[str, Asset] = {}
         self._cash_amt = 0.0
 
     @property
@@ -126,7 +126,7 @@ class AssetAccount(Account):
         return self._cash_amt
 
     @property
-    def holdings(self) -> list[Holding]:
+    def holdings(self) -> list[Asset]:
         """
         The holdings in the account.
         """
@@ -155,7 +155,7 @@ class AssetAccount(Account):
         self._cash_amt -= amt
         return self._cash_amt
 
-    def buy(self, amt: float, holding: Holding) -> float:
+    def buy(self, amt: float, holding: Asset) -> float:
         """
         Buy a holding with the specified amount.
 
@@ -163,7 +163,7 @@ class AssetAccount(Account):
         ----------
         amt : float
             The amount to spend on the purchase.
-        holding : Holding
+        holding : Asset
             The holding to buy.
 
         Returns

@@ -1,0 +1,51 @@
+{
+  "name": "Personal Portfolio",
+  "owner": "John Doe",
+  "accounts": [
+    {
+      "institution": "Vanguard",
+      "acc_type": "brokerage",
+      "acc_holdings": [
+        {
+          "type_": "stocks",
+          "name": "Vanguard Total Stock Market ETF",
+          "ticker": "VTI",
+          "shares": 100.5,
+          "cost_basis": 200.0,
+          "yield_": 1.5,
+          "expense_ratio": 0.03
+        },
+        {
+          "type_": "bonds",
+          "name": "Vanguard Total Bond Market ETF",
+          "ticker": "BND",
+          "shares": 50.0,
+          "cost_basis": 80.0,
+          "yield_": 3.2,
+          "expense_ratio": 0.04
+        }
+      ]
+    },
+    {
+      "institution": "Chase",
+      "acc_type": "bank",
+      "acc_holdings": null
+    },
+    {
+      "institution": "Fidelity",
+      "acc_type": "brokerage",
+      "acc_holdings": [
+        {
+          "type_": "stocks",
+          "name": "Vanguard Total Stock Market Index Fund",
+          "ticker": "VTSAX",
+          "shares": 500.0,
+          "cost_basis": 90.0,
+          "yield_": 1.8,
+          "expense_ratio": 0.04
+        }
+      ]
+    }
+  ],
+  "last_updated": "2025-10-06T19:30:00Z"
+}

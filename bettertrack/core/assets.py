@@ -19,10 +19,6 @@ class AssetType(StrEnum):
 class Asset:
     type_: AssetType
     name: str
-
-
-@dataclass(slots=True)
-class Holding(Asset):
     ticker: str
     shares: float = 0.0
     cost_basis: float | None = None
