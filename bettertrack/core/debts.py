@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 
-class DebtType(StrEnum):
+class LiabilityType(StrEnum):
     AUTO = "auto-loan"
     HOUSE = "house-loan"
     EDUCATION = "student-loan"
@@ -11,8 +11,8 @@ class DebtType(StrEnum):
 
 
 @dataclass(slots=True)
-class Loan:
-    type_: DebtType
+class Liability:
+    type_: LiabilityType
     name: str
     apr: float
     og_principal: float

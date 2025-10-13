@@ -2,9 +2,9 @@ from enum import StrEnum
 from typing import Self, TypeVar
 
 from bettertrack.core.assets import Asset
-from bettertrack.core.debts import Loan
+from bettertrack.core.debts import Liability
 from bettertrack.exceptions import OutOfCashError
-from bettertrack.price import get_asset_price
+from bettertrack.price import get_current_price
 
 
 class AccountType(StrEnum):
@@ -14,7 +14,7 @@ class AccountType(StrEnum):
     CREDIT_CARD = "credit-card"
 
 
-AccountHolding = TypeVar("AccountHolding", Asset, Loan)
+AccountHolding = TypeVar("AccountHolding", Asset, Liability)
 
 
 class Account:
@@ -47,7 +47,7 @@ class Account:
         self._institution = institution
         self._acc_type = acc_type
         self._holdings = acc_holdings
-        self._total_amt = None
+        self._total_amt = 0.0
         self._connected_bank = None
 
     @property
@@ -63,6 +63,13 @@ class Account:
         The type of account.
         """
         return self._acc_type
+
+    @property
+    def total_amount(self) -> float:
+        """
+        The total amount in the account.
+        """
+        return self._total_amt
 
     def add_connected_bank(self, bank_account: Self) -> None:
         """
@@ -179,7 +186,7 @@ class AssetAccount(Account):
         if amt > self._cash_amt:
             raise OutOfCashError("Not enough cash in account!")
 
-        holding.cost_basis = get_asset_price(holding.ticker)
+        holding.cost_basis = get_current_price(holding.ticker)
         holding.shares = amt / holding.cost_basis
 
         try:
@@ -223,6 +230,29 @@ class AssetAccount(Account):
         """
         pass
 
+    def reconcile(self) -> float:
+        """
+        Reconcile the account and calculate total value.
+        This calculates the total value as cash + market value of all holdings.
+
+        Returns
+        -------
+        float
+            The total value of the account.
+        """
+        # Start with cash
+        total = self._cash_amt
+
+        # Add market value of each holding
+        for holding in self._holdings.values():
+            current_price = get_current_price(holding.ticker)
+            market_value = holding.shares * current_price
+            total += market_value
+
+        # Update the _total_amt
+        self._total_amt = total
+        return self._total_amt
+
 
 class DebtAccount(Account):
     """
@@ -254,7 +284,7 @@ class DebtAccount(Account):
         self,
         institution: str,
         acc_type: AccountType,
-        acc_holdings: list[Loan] | None = None,
+        acc_holdings: list[Liability] | None = None,
     ):
         if acc_holdings and len(acc_holdings) > 1:
             err_msg = "Multiple loan entries for a debt account not yet supported"
@@ -288,3 +318,20 @@ class DebtAccount(Account):
             The remaining balance after the payment.
         """
         pass
+
+    def reconcile(self) -> float:
+        """
+        Reconcile the debt account and calculate total outstanding balance.
+
+        Returns
+        -------
+        float
+            The total outstanding debt balance.
+        """
+        total = 0.0
+        if self._holdings:
+            for liability in self._holdings:
+                total += liability.og_principal
+
+        self._total_amt = total
+        return self._total_amt

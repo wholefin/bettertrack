@@ -10,7 +10,7 @@ from bettertrack.config.portfolio import (
     PortfolioConfig,
 )
 from bettertrack.core.assets import Asset, AssetType
-from bettertrack.core.debts import Loan, DebtType
+from bettertrack.core.debts import Liability, LiabilityType
 from bettertrack.core.accounts import Account, AccountType
 
 
@@ -57,7 +57,7 @@ def test_debt_config_to_loan():
     """Test converting DebtConfig to Loan dataclass"""
     # Arrange
     debt_config = DebtConfig(
-        type_=DebtType.HOUSE,
+        type_=LiabilityType.HOUSE,
         name="Home Mortgage",
         apr=3.5,
         og_principal=320000.0,
@@ -65,11 +65,11 @@ def test_debt_config_to_loan():
     )
 
     # Act
-    loan = debt_config.to_loan()
+    loan = debt_config.to_liability()
 
     # Assert
-    assert isinstance(loan, Loan)
-    assert loan.type_ == DebtType.HOUSE
+    assert isinstance(loan, Liability)
+    assert loan.type_ == LiabilityType.HOUSE
     assert loan.name == "Home Mortgage"
     assert loan.apr == 3.5
     assert loan.og_principal == 320000.0
@@ -90,16 +90,21 @@ def test_account_config_to_account():
     account_config = AccountConfig(
         institution="Vanguard",
         acc_type=AccountType.BROKERAGE,
-        acc_holdings=[asset_config.to_asset()],
+        acc_holdings=[asset_config],  # Pass AssetConfig, not Asset
+        cash=1000.0,
     )
 
     # Act
     account = account_config.to_account()
 
     # Assert
-    assert isinstance(account, Account)
+    from bettertrack.core.accounts import AssetAccount
+
+    assert isinstance(account, AssetAccount)  # Should be AssetAccount, not base Account
     assert account.institution == "Vanguard"
     assert account.account_type == AccountType.BROKERAGE
+    assert account.cash == 1000.0
+    assert len(account.holdings) == 1
 
 
 def test_load_portfolio_from_json(sample_portfolio_data):
@@ -110,8 +115,12 @@ def test_load_portfolio_from_json(sample_portfolio_data):
     # Assert
     assert portfolio.name == "Personal Portfolio"
     assert portfolio.owner == "John Doe"
-    assert len(portfolio.accounts) == 3
-    assert portfolio.last_updated == datetime.fromisoformat("2025-10-06T19:30:00+00:00")
+    assert (
+        len(portfolio.accounts) == 6
+    )  # Updated: now includes 6 accounts (3 asset + 1 bank + 2 debt)
+    assert portfolio.last_updated == datetime.fromisoformat(
+        "2025-10-13T12:00:00+00:00"
+    )  # Updated timestamp
 
 
 def test_portfolio_accounts_structure(sample_portfolio_data):

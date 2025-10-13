@@ -2,8 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from bettertrack.core.accounts import Account, AccountType
-from bettertrack.core.debts import Loan, DebtType
+from bettertrack.core.accounts import Account, AccountType, AssetAccount, DebtAccount
+from bettertrack.core.debts import Liability, LiabilityType
 from bettertrack.core.assets import Asset, AssetType
 
 
@@ -57,7 +57,6 @@ class AssetConfig(BaseModel):
         )
 
 
-
 class DebtConfig(BaseModel):
     """
     Configuration for a debt.
@@ -76,29 +75,28 @@ class DebtConfig(BaseModel):
         The tenure of the debt in months.
     """
 
-    type_: DebtType
+    type_: LiabilityType
     name: str
     apr: float
     og_principal: float
     tenure: int
 
-    def to_loan(self) -> Loan:
+    def to_liability(self) -> Liability:
         """
         Convert the DebtConfig to a Loan instance.
 
         Returns
         -------
-        Loan
+        Liability
             An instance of the Loan class.
         """
-        return Loan(
+        return Liability(
             type_=self.type_,
             name=self.name,
             apr=self.apr,
             og_principal=self.og_principal,
             tenure=self.tenure,
         )
-
 
 
 class AccountConfig(BaseModel):
@@ -111,13 +109,16 @@ class AccountConfig(BaseModel):
         The institution that the account is with.
     acc_type : str
         The type of account.
-    acc_holdings : list[Asset | Loan] | None, optional
+    acc_holdings : list[AssetConfig | DebtConfig] | None, optional
         A list of holdings or loans associated with the account, by default None.
+    cash : float, optional
+        Amount of cash in the account, by default 0.0.
     """
 
     institution: str
     acc_type: AccountType
-    acc_holdings: list[Asset | Loan] | None = None
+    acc_holdings: list[AssetConfig | DebtConfig] | None = None
+    cash: float = 0.0
 
     def to_account(self) -> Account:
         """
@@ -126,13 +127,45 @@ class AccountConfig(BaseModel):
         Returns
         -------
         Account
-            An instance of the Account class.
+            An instance of the Account (AssetAccount or DebtAccount) class.
         """
-        return Account(
-            institution=self.institution,
-            acc_type=self.acc_type,
-            acc_holdings=self.acc_holdings,
+        # Determine if this is an asset or debt account based on holdings
+        has_debts = self.acc_holdings and any(
+            isinstance(h, DebtConfig) for h in self.acc_holdings
         )
+        has_assets = self.acc_holdings and any(
+            isinstance(h, AssetConfig) for h in self.acc_holdings
+        )
+
+        if has_debts:
+            # Create DebtAccount
+            debt_holdings = [
+                h.to_liability() for h in self.acc_holdings if isinstance(h, DebtConfig)
+            ]
+            return DebtAccount(
+                institution=self.institution,
+                acc_type=self.acc_type,
+                acc_holdings=debt_holdings,
+            )
+        else:
+            # Create AssetAccount (default)
+            acc = AssetAccount(
+                institution=self.institution,
+                acc_type=self.acc_type,
+            )
+
+            # Add cash if present
+            if self.cash > 0:
+                acc.transfer_in(self.cash)
+
+            # Add asset holdings directly to preserve cost basis
+            if has_assets:
+                for holding_cfg in self.acc_holdings:
+                    if isinstance(holding_cfg, AssetConfig):
+                        asset = holding_cfg.to_asset()
+                        acc._holdings[asset.ticker] = asset
+
+            return acc
 
 
 class PortfolioConfig(BaseModel):

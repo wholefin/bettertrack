@@ -5,6 +5,7 @@
     {
       "institution": "Vanguard",
       "acc_type": "brokerage",
+      "cash": 5000.00,
       "acc_holdings": [
         {
           "type_": "stocks",
@@ -29,11 +30,13 @@
     {
       "institution": "Chase",
       "acc_type": "bank",
+      "cash": 12000.00,
       "acc_holdings": null
     },
     {
       "institution": "Fidelity",
       "acc_type": "brokerage",
+      "cash": 2500.00,
       "acc_holdings": [
         {
           "type_": "stocks",
@@ -45,7 +48,41 @@
           "expense_ratio": 0.04
         }
       ]
+    },
+    {
+      "institution": "Ally Bank",
+      "acc_type": "bank",
+      "cash": 25000.00,
+      "acc_holdings": null
+    },
+    {
+      "institution": "Wells Fargo",
+      "acc_type": "credit-card",
+      "cash": 0.0,
+      "acc_holdings": [
+        {
+          "type_": "house-loan",
+          "name": "Home Mortgage",
+          "apr": 3.5,
+          "og_principal": 320000.0,
+          "tenure": 360
+        }
+      ]
+    },
+    {
+      "institution": "Toyota Financial",
+      "acc_type": "credit-card",
+      "cash": 0.0,
+      "acc_holdings": [
+        {
+          "type_": "auto-loan",
+          "name": "Car Loan",
+          "apr": 4.2,
+          "og_principal": 25000.0,
+          "tenure": 60
+        }
+      ]
     }
   ],
-  "last_updated": "2025-10-06T19:30:00Z"
+  "last_updated": "2025-10-13T12:00:00Z"
 }
