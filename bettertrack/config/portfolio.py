@@ -1,4 +1,5 @@
 from datetime import datetime
+from pathlib import Path
 
 from pydantic import BaseModel
 
@@ -188,6 +189,18 @@ class PortfolioConfig(BaseModel):
 
     name: str
     owner: str
-    accounts: list[AccountConfig]
-    last_updated: datetime | None = None
+    accounts: list[AccountConfig] | None = None
+    last_updated: datetime = datetime.now()
     created_at: datetime = datetime.now()
+
+    def save(self, path: Path) -> None:
+        """
+        Save the portfolio configuration to a JSON file.
+
+        Parameters
+        ----------
+        path : Path
+            The file path to save the configuration to.
+        """
+        with open(path, "w") as f:
+            f.write(self.model_dump_json(indent=4))
