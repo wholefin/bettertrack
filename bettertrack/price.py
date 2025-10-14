@@ -8,6 +8,7 @@ import requests
 # Load .env file if it exists (for development/testing)
 try:
     from dotenv import load_dotenv
+
     env_path = Path(__file__).parent.parent / ".env"
     if env_path.exists():
         load_dotenv(env_path)
@@ -81,9 +82,7 @@ def get_current_price(ticker: str) -> float:
 
         if "Note" in data:
             # API rate limit message
-            raise RuntimeError(
-                f"Alpha Vantage API rate limit reached. {data['Note']}"
-            )
+            raise RuntimeError(f"Alpha Vantage API rate limit reached. {data['Note']}")
 
         # Extract price from response
         quote = data.get("Global Quote", {})
