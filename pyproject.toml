@@ -7,6 +7,12 @@ name = "bettertrack"
 version = "0.0.1"
 description = "Network tracker in terminal"
 readme = "README.md"
+authors = [
+    { name = "Avik Basu", email = "avikbasu93@gmail.com"}
+]
+maintainers = [
+    { name = "Avik Basu", email = "avikbasu93@gmail.com"}
+]
 requires-python = ">=3.13"
 dependencies = [
     "matplotlib>=3.10.0",
@@ -19,7 +25,7 @@ dependencies = [
 ]
 
 [project.scripts]
-bettertrack = "bettertrack.cli:main"
+bettertrack = "bettertrack.cli.main:main"
 
 [dependency-groups]
 dev = [
