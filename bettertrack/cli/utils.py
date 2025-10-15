@@ -24,11 +24,13 @@ def display_accounts_table(accounts: list[AccountConfig]) -> None:
 
     for idx, account in enumerate(accounts, 1):
         cash_balance = f"${account.cash:,.2f}" if hasattr(account, "cash") else "N/A"
-        total_value = f"${account.total_amount:,.2f}"
+
+        # TODO: Support total amount
+        total_value = f"${account.cash:,.2f}"
         table.add_row(
             str(idx),
             account.institution,
-            account.account_type.value,
+            account.acc_type,
             cash_balance,
             total_value,
         )
