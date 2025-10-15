@@ -5,6 +5,7 @@ import typer
 from typing_extensions import Annotated
 
 from bettertrack._constants import DEFAULT_PORTFOLIO_PATH
+from bettertrack.cli.utils import display_accounts_table, check_if_portfolio_exists
 from bettertrack.config.portfolio import AccountConfig, PortfolioConfig
 from bettertrack.core.accounts import AccountType
 
@@ -12,11 +13,24 @@ accounts_app = typer.Typer(help="Manage accounts")
 
 
 @accounts_app.command("list")
-def accounts_list():
+def accounts_list(
+    path: Annotated[Path, typer.Option("--path", "-p")] = DEFAULT_PORTFOLIO_PATH,
+) -> None:
     """
     List all accounts with their balances.
     """
-    typer.echo("TODO: List accounts")
+    portfolio_file = path / "portfolio.json"
+
+    # Load existing portfolio
+    check_if_portfolio_exists(portfolio_file)
+
+    portfolio = PortfolioConfig.model_validate_json(portfolio_file.read_text())
+
+    if not portfolio.accounts:
+        rich.print("[yellow]No accounts found in portfolio.[/yellow]")
+        raise typer.Exit(code=0)
+
+    display_accounts_table(portfolio.accounts)
 
 
 @accounts_app.command("add")
@@ -31,11 +45,7 @@ def accounts_add(
     portfolio_file = path / "portfolio.json"
 
     # Load existing portfolio
-    if not portfolio_file.exists():
-        rich.print(
-            "[red]Error:[/red] Portfolio not found. Run [bold]bettertrack init[/bold] first."
-        )
-        raise typer.Exit(code=1)
+    check_if_portfolio_exists(portfolio_file)
 
     portfolio = PortfolioConfig.model_validate_json(portfolio_file.read_text())
 
