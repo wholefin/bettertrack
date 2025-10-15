@@ -4,6 +4,7 @@ from rich.table import Table
 from rich import print
 
 from bettertrack.config.portfolio import AccountConfig
+from bettertrack.core.accounts import AccountType
 
 
 def display_accounts_table(accounts: list[AccountConfig]) -> None:
@@ -53,3 +54,42 @@ def check_if_portfolio_exists(portfolio_file) -> None:
             "[red]Error:[/red] Portfolio not found. Run [bold]bettertrack init[/bold] first."
         )
         raise typer.Exit(code=1)
+
+
+def select_asset_or_debt() -> bool:
+    """
+    Prompt the user to select whether the account is an asset or a debt.
+
+    Returns
+    -------
+    bool
+        True if the account is an asset, False if it is a debt/liability.
+    """
+    # Show asset/liability options
+    print("\nAsset or Liability:")
+    print("  1. Asset")
+    print("  2. Liability")
+
+    asset_or_liability_choice = typer.prompt(
+        "Select (1 for Asset, 2 for Liability)", type=int, default=1
+    )
+    is_asset = asset_or_liability_choice == 1
+
+    if is_asset:
+        print("\nAdding as Asset account.")
+        print("Enter holdings later using the 'holdings add' command.")
+    else:
+        print("\nAdding as Liability account.")
+        print("Enter loans later using the 'holdings add' command.")
+
+    return is_asset
+
+
+def select_account_type() -> AccountType:
+    print("\nAccount types:")
+    for i, acc_type in enumerate(AccountType, 1):
+        print(f"  {i}. {acc_type.value}")
+
+    acc_type_choice = typer.prompt("Select account type", type=int, default=1)
+    acc_type = list(AccountType)[acc_type_choice - 1]
+    return AccountType(acc_type)

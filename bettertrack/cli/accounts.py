@@ -5,9 +5,13 @@ import typer
 from typing_extensions import Annotated
 
 from bettertrack._constants import DEFAULT_PORTFOLIO_PATH
-from bettertrack.cli.utils import display_accounts_table, check_if_portfolio_exists
+from bettertrack.cli.utils import (
+    display_accounts_table,
+    check_if_portfolio_exists,
+    select_asset_or_debt,
+    select_account_type,
+)
 from bettertrack.config.portfolio import AccountConfig, PortfolioConfig
-from bettertrack.core.accounts import AccountType
 
 accounts_app = typer.Typer(help="Manage accounts")
 
@@ -54,27 +58,33 @@ def accounts_add(
 
     institution = typer.prompt("Institution name (e.g., Vanguard, Chase)")
 
+    # Show asset/liability options
+    is_asset = select_asset_or_debt()
+    if is_asset:
+        cash = typer.prompt("Current cash balance", type=float, default=0.0)
+    else:
+        cash = 0.0
+
     # Show available account types
-    rich.print("\nAccount types:")
-    for i, acc_type in enumerate(AccountType, 1):
-        rich.print(f"  {i}. {acc_type.value}")
-
-    acc_type_choice = typer.prompt("Select account type", type=int, default=1)
-    acc_type = list(AccountType)[acc_type_choice - 1]
-
-    cash = typer.prompt("Initial cash balance", type=float, default=0.0)
-
-    # Create account config
-    account_config = AccountConfig(
-        institution=institution,
-        acc_type=acc_type,
-        cash=cash,
-        acc_holdings=None,
-    )
+    acc_type = select_account_type()
 
     # Add to portfolio
     if portfolio.accounts is None:
         portfolio.accounts = []
+
+    # Determine account_id based on order (1-indexed)
+    account_id = len(portfolio.accounts) + 1
+
+    # Create account config
+    account_config = AccountConfig(
+        account_id=account_id,
+        institution=institution,
+        acc_type=acc_type,
+        cash=cash,
+        acc_holdings=None,
+        is_asset=is_asset,
+    )
+
     portfolio.accounts.append(account_config)
 
     # Save

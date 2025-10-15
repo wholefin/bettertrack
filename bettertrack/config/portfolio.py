@@ -10,7 +10,7 @@ from bettertrack.core.assets import Asset, AssetType
 
 class AssetConfig(BaseModel):
     """
-    Configuration for an asset.
+    Configuration for an asset holding.
 
     Parameters
     ----------
@@ -60,7 +60,7 @@ class AssetConfig(BaseModel):
 
 class DebtConfig(BaseModel):
     """
-    Configuration for a debt.
+    Configuration for a debt holding.
 
     Parameters
     ----------
@@ -106,6 +106,8 @@ class AccountConfig(BaseModel):
 
     Parameters
     ----------
+    account_id : int
+        A unique identifier for the account.
     institution : str
         The institution that the account is with.
     acc_type : str
@@ -116,10 +118,12 @@ class AccountConfig(BaseModel):
         Amount of cash in the account, by default 0.0.
     """
 
+    account_id: int
     institution: str
     acc_type: AccountType
     acc_holdings: list[AssetConfig | DebtConfig] | None = None
     cash: float = 0.0
+    is_asset: bool = True
 
     def to_account(self) -> Account:
         """
@@ -130,43 +134,17 @@ class AccountConfig(BaseModel):
         Account
             An instance of the Account (AssetAccount or DebtAccount) class.
         """
-        # Determine if this is an asset or debt account based on holdings
-        has_debts = self.acc_holdings and any(
-            isinstance(h, DebtConfig) for h in self.acc_holdings
-        )
-        has_assets = self.acc_holdings and any(
-            isinstance(h, AssetConfig) for h in self.acc_holdings
-        )
-
-        if has_debts:
-            # Create DebtAccount
-            debt_holdings = [
-                h.to_liability() for h in self.acc_holdings if isinstance(h, DebtConfig)
-            ]
-            return DebtAccount(
+        if self.is_asset:
+            return AssetAccount(
                 institution=self.institution,
                 acc_type=self.acc_type,
-                acc_holdings=debt_holdings,
+                acc_holdings=self.acc_holdings,
             )
-        else:
-            # Create AssetAccount (default)
-            acc = AssetAccount(
-                institution=self.institution,
-                acc_type=self.acc_type,
-            )
-
-            # Add cash if present
-            if self.cash > 0:
-                acc.transfer_in(self.cash)
-
-            # Add asset holdings directly to preserve cost basis
-            if has_assets:
-                for holding_cfg in self.acc_holdings:
-                    if isinstance(holding_cfg, AssetConfig):
-                        asset = holding_cfg.to_asset()
-                        acc._holdings[asset.ticker] = asset
-
-            return acc
+        return DebtAccount(
+            institution=self.institution,
+            acc_type=self.acc_type,
+            acc_holdings=self.acc_holdings,
+        )
 
 
 class PortfolioConfig(BaseModel):
