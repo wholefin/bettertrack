@@ -26,10 +26,10 @@ class Asset:
     expense_ratio: float = 0.0
 
     def dividend(self):
-        pass
+        raise NotImplementedError()
 
     def interest(self):
-        pass
+        raise NotImplementedError()
 
     def __add__(self, other: Self) -> Self:
         if self.ticker != other.ticker:
