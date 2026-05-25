@@ -85,9 +85,12 @@ def select_asset_or_debt() -> bool:
     return is_asset
 
 
-def select_account_type() -> AccountType:
+def select_account_type(is_asset: bool) -> AccountType:
     print("\nAccount types:")
-    for i, acc_type in enumerate(AccountType, 1):
+    account_types = (
+        AccountType.get_asset_types() if is_asset else AccountType.get_liability_types()
+    )
+    for i, acc_type in enumerate(account_types, 1):
         print(f"  {i}. {acc_type.value}")
 
     acc_type_choice = typer.prompt("Select account type", type=int, default=1)

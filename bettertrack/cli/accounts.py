@@ -13,10 +13,10 @@ from bettertrack.cli.utils import (
 )
 from bettertrack.config.portfolio import AccountConfig, PortfolioConfig
 
-accounts_app = typer.Typer(help="Manage accounts")
+accounts_app = typer.Typer(help="Manage accounts", no_args_is_help=True)
 
 
-@accounts_app.command("list")
+@accounts_app.command("ls")
 def accounts_list(
     path: Annotated[Path, typer.Option("--path", "-p")] = DEFAULT_PORTFOLIO_PATH,
 ) -> None:
@@ -66,7 +66,7 @@ def accounts_add(
         cash = 0.0
 
     # Show available account types
-    acc_type = select_account_type()
+    acc_type = select_account_type(is_asset)
 
     # Add to portfolio
     if portfolio.accounts is None:
