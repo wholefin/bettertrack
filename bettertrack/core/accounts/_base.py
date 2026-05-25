@@ -7,9 +7,56 @@ from bettertrack.core.debts import Liability
 
 class AccountType(StrEnum):
     BANK = "bank"
-    CREDIT_UNION = "credit-union"
     BROKERAGE = "brokerage"
+    RETIREMENT = "retirement"
+    HSA = "hsa"
+    CRYPTO_WALLET = "crypto-wallet"
+    CASH = "cash"
+    REAL_ESTATE = "real-estate"
+
     CREDIT_CARD = "credit-card"
+    MORTGAGE = "mortgage"
+    AUTO_LOAN = "auto-loan"
+    STUDENT_LOAN = "student-loan"
+    PERSONAL_LOAN = "personal-loan"
+
+    @staticmethod
+    def get_asset_types() -> list["AccountType"]:
+        """
+        Get the asset account types.
+
+        Returns
+        -------
+        list[AccountType]
+            A list of asset account types.
+        """
+        return [
+            AccountType.BANK,
+            AccountType.BROKERAGE,
+            AccountType.RETIREMENT,
+            AccountType.HSA,
+            AccountType.CRYPTO_WALLET,
+            AccountType.CASH,
+            AccountType.REAL_ESTATE,
+        ]
+
+    @staticmethod
+    def get_liability_types() -> list["AccountType"]:
+        """
+        Get the liability account types.
+
+        Returns
+        -------
+        list[AccountType]
+            A list of liability account types.
+        """
+        return [
+            AccountType.CREDIT_CARD,
+            AccountType.MORTGAGE,
+            AccountType.AUTO_LOAN,
+            AccountType.STUDENT_LOAN,
+            AccountType.PERSONAL_LOAN,
+        ]
 
 
 AccountHolding = TypeVar("AccountHolding", Asset, Liability)
@@ -27,19 +74,12 @@ class Account:
         The type of account.
     acc_holdings : list[AccountHolding] | None, optional
         A list of holdings or loans associated with the account, by default None.
-
-    Attributes
-    ----------
-    institution : str
-        The institution that the account is with.
-    account_type : AccountType
-        The type of account.
     """
 
     def __init__(
         self,
         institution: str,
-        acc_type: AccountType | str,
+        acc_type: AccountType,
         acc_holdings: list[AccountHolding] | None = None,
     ):
         self._institution = institution

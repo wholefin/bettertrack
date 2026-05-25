@@ -18,6 +18,7 @@ dependencies = [
     "matplotlib>=3.10.0",
     "numpy>=2.2.1",
     "pandas>=2.2.3",
+    "platformdirs>=4.9.6",
     "pydantic>=2.11.10",
     "python-dotenv>=1.1.1",
     "requests>=2.32.5",
@@ -26,6 +27,7 @@ dependencies = [
 
 [project.scripts]
 bettertrack = "bettertrack.cli.main:main"
+bt = "bettertrack.cli.main:main"
 
 [dependency-groups]
 dev = [

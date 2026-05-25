@@ -2,6 +2,8 @@ from pathlib import Path
 
 import rich
 import typer
+from rich.console import Console
+from rich.table import Table
 from typing_extensions import Annotated
 
 from bettertrack._constants import DEFAULT_PORTFOLIO_PATH
@@ -27,14 +29,10 @@ app.add_typer(holdings_app, name="holdings")
 
 @app.command()
 def init(
+    portfolio_name: Annotated[str, typer.Option("--name", "-n", prompt=True)],
+    owner_name: Annotated[str, typer.Option("--owner", "-o", prompt=True)],
     path: Annotated[Path, typer.Option("--path", "-p")] = DEFAULT_PORTFOLIO_PATH,
     force: Annotated[bool, typer.Option("--force", "-f")] = False,
-    portfolio_name: Annotated[
-        str, typer.Option("--name", "-n", prompt_required=True)
-    ] = "My Portfolio",
-    owner_name: Annotated[
-        str, typer.Option("--owner", "-o", prompt_required=True)
-    ] = "User",
 ):
     """
     Initialize a new portfolio at the specified path.
@@ -56,6 +54,41 @@ def init(
     conf.save(path / "portfolio.json")
 
     rich.print(f"Initialized portfolio at {path} for {owner_name}'s '{portfolio_name}'")
+
+
+@app.command()
+def ls(path: Annotated[Path, typer.Option("--path", "-p")] = DEFAULT_PORTFOLIO_PATH):
+    """
+    List all portfolios.
+    """
+    portfolio_files = list(path.glob("*/portfolio.json"))
+    if path.joinpath("portfolio.json").exists():
+        portfolio_files.insert(0, path / "portfolio.json")
+
+    if not portfolio_files:
+        rich.print(
+            "[yellow]No portfolios found. Run [bold]bettertrack init[/bold] to create one.[/yellow]"
+        )
+        return
+
+    table = Table(show_header=True, header_style="bold magenta")
+    table.add_column("Name", style="cyan")
+    table.add_column("Owner", style="green")
+    table.add_column("Accounts", justify="right", style="magenta")
+    table.add_column("Created", style="dim")
+    table.add_column("Last Updated", style="dim")
+
+    for pf in portfolio_files:
+        portfolio = PortfolioConfig.model_validate_json(pf.read_text())
+        table.add_row(
+            portfolio.name,
+            portfolio.owner,
+            str(len(portfolio.accounts)) if portfolio.accounts else "0",
+            portfolio.created_at.strftime("%Y-%m-%d"),
+            portfolio.last_updated.strftime("%Y-%m-%d %H:%M"),
+        )
+
+    Console().print(table)
 
 
 @app.command()
