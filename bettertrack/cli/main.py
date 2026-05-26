@@ -7,7 +7,7 @@ from rich.table import Table
 from typing_extensions import Annotated
 
 from bettertrack._constants import DEFAULT_PORTFOLIO_PATH
-from bettertrack.config.portfolio import PortfolioConfig
+from bettertrack.core.portfolio import Portfolio
 from bettertrack.cli.accounts import accounts_app
 from bettertrack.cli.holdings import holdings_app
 
@@ -50,7 +50,7 @@ def init(
 
     path.mkdir(parents=True, exist_ok=True)
 
-    conf = PortfolioConfig(name=portfolio_name, owner=owner_name)
+    conf = Portfolio(name=portfolio_name, owner=owner_name)
     conf.save(path / "portfolio.json")
 
     rich.print(f"Initialized portfolio at {path} for {owner_name}'s '{portfolio_name}'")
@@ -79,7 +79,7 @@ def ls(path: Annotated[Path, typer.Option("--path", "-p")] = DEFAULT_PORTFOLIO_P
     table.add_column("Last Updated", style="dim")
 
     for pf in portfolio_files:
-        portfolio = PortfolioConfig.model_validate_json(pf.read_text())
+        portfolio = Portfolio.model_validate_json(pf.read_text())
         table.add_row(
             portfolio.name,
             portfolio.owner,

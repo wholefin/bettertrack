@@ -1,5 +1,6 @@
-from dataclasses import dataclass
 from enum import StrEnum
+
+from pydantic import BaseModel
 
 
 class LiabilityType(StrEnum):
@@ -10,8 +11,9 @@ class LiabilityType(StrEnum):
     PERSONAL = "personal-loan"
 
 
-@dataclass(slots=True)
-class Liability:
+class Liability(BaseModel):
+    """A single liability inside a debt account."""
+
     type_: LiabilityType
     name: str
     apr: float
