@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import requests
 
-
 # Load .env file if it exists (for development/testing)
 try:
     from dotenv import load_dotenv

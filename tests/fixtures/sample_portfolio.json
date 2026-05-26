@@ -3,8 +3,10 @@
   "owner": "John Doe",
   "accounts": [
     {
+      "account_id": 1,
       "institution": "Vanguard",
       "acc_type": "brokerage",
+      "is_asset": true,
       "cash": 5000.00,
       "acc_holdings": [
         {
@@ -28,14 +30,18 @@
       ]
     },
     {
+      "account_id": 2,
       "institution": "Chase",
       "acc_type": "bank",
+      "is_asset": true,
       "cash": 12000.00,
       "acc_holdings": null
     },
     {
+      "account_id": 3,
       "institution": "Fidelity",
       "acc_type": "brokerage",
+      "is_asset": true,
       "cash": 2500.00,
       "acc_holdings": [
         {
@@ -50,14 +56,18 @@
       ]
     },
     {
+      "account_id": 4,
       "institution": "Ally Bank",
       "acc_type": "bank",
+      "is_asset": true,
       "cash": 25000.00,
       "acc_holdings": null
     },
     {
+      "account_id": 5,
       "institution": "Wells Fargo",
-      "acc_type": "credit-card",
+      "acc_type": "mortgage",
+      "is_asset": false,
       "cash": 0.0,
       "acc_holdings": [
         {
@@ -70,8 +80,10 @@
       ]
     },
     {
+      "account_id": 6,
       "institution": "Toyota Financial",
-      "acc_type": "credit-card",
+      "acc_type": "auto-loan",
+      "is_asset": false,
       "cash": 0.0,
       "acc_holdings": [
         {
@@ -84,5 +96,6 @@
       ]
     }
   ],
-  "last_updated": "2025-10-13T12:00:00Z"
+  "last_updated": "2025-10-13T12:00:00+00:00",
+  "created_at": "2025-10-13T12:00:00+00:00"
 }
